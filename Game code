@@ -1,0 +1,72 @@
+package vigneshgame1;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Random;
+
+public class GuessTheWordGame {
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            JFrame frame = new WordGuessFrame();
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+            frame.setVisible(true);
+        });
+    }
+}
+
+class WordGuessFrame extends JFrame {
+    private String[] words = {"java", "programming", "computer", "keyboard", "developer"};
+    private String targetWord;
+    private JLabel displayLabel;
+    private JTextField guessTextField;
+    private JButton guessButton;
+    private int attempts = 0;
+    private int maxAttempts = 5;
+
+    public WordGuessFrame() {
+        setTitle("Guess the Word Game");
+        setSize(400, 200);
+        setLayout(new FlowLayout());
+
+        targetWord = getRandomWord(words);
+
+        displayLabel = new JLabel("Guess the word: " + createMaskedWord(targetWord));
+        add(displayLabel);
+
+        guessTextField = new JTextField(15);
+        add(guessTextField);
+
+        guessButton = new JButton("Guess");
+        add(guessButton);
+
+        guessButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String guess = guessTextField.getText().toLowerCase();
+                if (guess.equals(targetWord)) {
+                    displayLabel.setText("Congratulations! You've guessed the word: " + targetWord);
+                    guessButton.setEnabled(false);
+                } else {
+                    attempts++;
+                    if (attempts < maxAttempts) {
+                        displayLabel.setText("Incorrect guess. Attempts left: " + (maxAttempts - attempts));
+                    } else {
+                        displayLabel.setText("You're out of attempts. The word was: " + targetWord);
+                        guessButton.setEnabled(false);
+                    }
+                }
+            }
+        });
+    }
+
+    private String getRandomWord(String[] wordList) {
+        Random random = new Random();
+        int index = random.nextInt(wordList.length);
+        return wordList[index];
+    }
+
+    private String createMaskedWord(String word) {
+        return word.replaceAll(".", "_");
+    }
+}
